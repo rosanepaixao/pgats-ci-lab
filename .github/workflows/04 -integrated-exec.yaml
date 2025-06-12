@@ -3,7 +3,7 @@
 name: 'Execução Integrada'
 
 on:
-    workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   inspecao:
@@ -12,68 +12,68 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Instalando Yarn
-        run: npm install -g yarn
-
-      - name: Instalando dependências
+      - name: Instalando dependências do projeto
         run: yarn
 
-      - name: Checando padronizacao do código
+      - name: Checando padronização de código
         run: yarn lint
 
-
-  unidade:
+  unit-tests:
     runs-on: ubuntu-latest
+    needs: [inspecao]
 
     steps:
       - uses: actions/checkout@v4
-  
-      - name: Instalando Yarn
-        run: npm install -g yarn
-  
-      - name: Instalando dependências
+
+      - name: Instalando dependências do projeto
         run: yarn
-  
-      - name: Executando testes de unidade
+
+      - name: Executando os Testes Unitários
         run: yarn test
 
-  e2e_tests:
+  mutation-tests:
     runs-on: ubuntu-latest
+    needs: [inspecao, unit-tests]
 
     steps:
-        # clone do projeto
       - uses: actions/checkout@v4
 
-        # instalacao do node 
+      - name: Instalando dependências do projeto
+        run: yarn
+
+      - name: Executando os Testes de Mutação
+        run: yarn run test:mutation
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: [inspecao]
+
+    steps:
+      - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
-          node-version: latest
+          node-version: 22.x
 
-        # instalacao do Yarn
-      - name: Instalando Yarn
-        run: npm install -g yarn
+      - name: Instalando dependências do projeto
+        run: yarn
 
-        # instalacao das dependências
-      - name: Instalando dependências
-        run: yarn 
-
-        # instalacao do Playwright
       - name: Instalando Playwright
         run: yarn playwright install
 
-        # executar os teste e2e
       - name: Executando Testes E2E
         run: yarn run e2e
-          
+
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: relatorio
+          name: Playwright Report File
           path: ./playwright-report
 
   deploy:
     runs-on: ubuntu-latest
+    needs: [e2e-tests, unit-tests]
 
     steps:
-      - name: Simulação do Deploy
-        run: echo "simulando o deploy com sucesso"
+      - name: Simulando Deploy
+        run: echo "Deploy realizado com sucesso!"
