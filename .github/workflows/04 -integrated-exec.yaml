@@ -26,50 +26,50 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-        - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
   
-        - name: Instalando Yarn
-          run: npm install -g yarn
+      - name: Instalando Yarn
+        run: npm install -g yarn
   
-        - name: Instalando dependências
-          run: yarn
+      - name: Instalando dependências
+        run: yarn
   
-        - name: Executando testes de unidade
-          run: yarn test
+      - name: Executando testes de unidade
+        run: yarn test
 
   e2e_tests:
     runs-on: ubuntu-latest
 
     steps:
         # clone do projeto
-        - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
         # instalacao do node 
-        - uses: actions/setup-node@v4
-          with:
-            node-version: 22.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
 
         # instalacao do Yarn
-        - name: Instalando Yarn
-          run: npm install -g yarn
+      - name: Instalando Yarn
+        run: npm install -g yarn
 
         # instalacao das dependências
-        - name: Instalando dependências
-          run: yarn 
+      - name: Instalando dependências
+        run: yarn 
 
         # instalacao do Playwright
-        - name: Instalando Playwright
-          run: yarn playwright install
+      - name: Instalando Playwright
+        run: yarn playwright install
 
         # executar os teste e2e
-        - name: Executando Testes E2E
-          run: yarn run e2e
+      - name: Executando Testes E2E
+        run: yarn run e2e
           
-        - uses: actions/upload-artifact@v4
-          if: ${{ !cancelled() }}
-          with:
-            name: relatorio
-            path: ./playwright-report
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: relatorio
+          path: ./playwright-report
 
   deploy:
     runs-on: ubuntu-latest
